@@ -1,0 +1,118 @@
+# Battery Paper Agent - No API Version
+# 仅使用免费开放论文元数据接口 + 规则打分，不调用 OpenAI/ChatGPT API。
+
+site:
+  title: "BMS论文日报"
+  language: "zh-CN"
+  timezone: "Asia/Shanghai"
+
+run:
+  lookback_days: 2              # 优先检索最近2天
+  fallback_lookback_days: 7     # 如果结果太少，自动放宽到最近7天
+  min_results_before_fallback: 6
+  max_raw_results_per_query: 25
+  max_final_papers: 12
+  include_c_level: false        # 默认日报只放A/B级，避免噪声过多
+
+sources:
+  arxiv: true
+  openalex: true
+  crossref: true
+
+# 用于 OpenAlex/Crossref polite pool 和 User-Agent。也可通过环境变量 CONTACT_EMAIL 覆盖。
+contact_email: "your_email@example.com"
+
+queries:
+  include:
+    - "battery management system"
+    - "state of health battery"
+    - "remaining useful life battery"
+    - "state of charge battery"
+    - "battery fault diagnosis"
+    - "thermal runaway early warning battery"
+    - "battery pack inconsistency"
+    - "cloud battery management"
+    - "EV fleet battery health"
+    - "energy storage battery health"
+    - "physics-informed battery"
+    - "battery digital twin"
+    - "battery safety warning"
+    - "lithium-ion battery prognostics"
+
+  # 这些关键词命中后会降权或剔除，避免纯材料/化学论文淹没BMS论文。
+  exclude:
+    - "cathode synthesis"
+    - "anode synthesis"
+    - "electrolyte additive"
+    - "solid-state electrolyte"
+    - "lithium metal anode"
+    - "sodium metal anode"
+    - "catalyst"
+    - "oxygen evolution reaction"
+    - "hydrogen evolution reaction"
+    - "recycling process"
+    - "material characterization"
+    - "density functional theory"
+
+# 方向关键词及权重：越贴近BMS越高。
+scoring_keywords:
+  "battery management system": 18
+  "bms": 18
+  "state of health": 16
+  "soh": 16
+  "remaining useful life": 16
+  "rul": 16
+  "state of charge": 12
+  "soc": 12
+  "fault diagnosis": 14
+  "safety warning": 14
+  "early warning": 12
+  "thermal runaway": 14
+  "battery pack": 12
+  "pack inconsistency": 16
+  "cell inconsistency": 14
+  "field data": 14
+  "fleet": 12
+  "cloud": 10
+  "digital twin": 12
+  "physics-informed": 12
+  "transfer learning": 10
+  "domain adaptation": 10
+  "uncertainty": 8
+  "prognostics": 12
+  "health management": 14
+  "energy storage system": 8
+  "electric vehicle": 8
+  "incremental capacity": 10
+  "ica": 10
+  "differential voltage": 8
+
+journal_whitelist:
+  - "Nature Energy"
+  - "Nature Communications"
+  - "Joule"
+  - "Energy & Environmental Science"
+  - "Advanced Energy Materials"
+  - "Energy Storage Materials"
+  - "Applied Energy"
+  - "Journal of Power Sources"
+  - "Journal of Energy Storage"
+  - "IEEE Transactions on Power Electronics"
+  - "IEEE Transactions on Transportation Electrification"
+  - "IEEE Transactions on Industrial Electronics"
+  - "IEEE Transactions on Intelligent Transportation Systems"
+  - "eTransportation"
+  - "Cell Reports Physical Science"
+  - "Renewable and Sustainable Energy Reviews"
+  - "Batteries & Supercaps"
+  - "ACS Applied Energy Materials"
+
+email:
+  enabled: true
+  # 以下配置建议通过 GitHub Secrets 注入；本文件只保留字段名。
+  smtp_host_env: "SMTP_HOST"
+  smtp_port_env: "SMTP_PORT"
+  smtp_user_env: "SMTP_USER"
+  smtp_pass_env: "SMTP_PASS"
+  email_from_env: "EMAIL_FROM"
+  email_to_env: "EMAIL_TO"
